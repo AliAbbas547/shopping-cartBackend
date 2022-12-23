@@ -7,7 +7,6 @@ const UserSchema = new mongoose.Schema(
     fname: { 
         type: String, 
         required: [true, "Please provide the first name"],
-        unique : true,
         trim : true,
         validate: {
                 validator: function (val) {
@@ -22,7 +21,6 @@ const UserSchema = new mongoose.Schema(
     lname: { 
         type: String, 
         required: [true, "Please provide the last name"],
-        unique : true,
         trim : true,
         validate: {
                 validator: function (val) {

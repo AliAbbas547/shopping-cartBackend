@@ -25,7 +25,7 @@ const createUser = async (req, res) => {
 
     res.status(201).send({ status: true, data: datacreate });
   } catch (err) {
-    return errorHandler(err, res);
+      return errorHandler(err, res);
   }
 };
 
