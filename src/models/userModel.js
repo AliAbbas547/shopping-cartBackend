@@ -1,6 +1,6 @@
 //<----------------------< Importing : Packages >---------------------->//
 const mongoose = require("mongoose");
-const validator = require("validator");
+const validation = require('../validation/validation')
 //<----------------------< Create : UserSchema >----------------------->//
 const UserSchema = new mongoose.Schema(
   {
@@ -8,36 +8,20 @@ const UserSchema = new mongoose.Schema(
         type: String, 
         required: [true, "Please provide the first name"],
         trim : true,
-        validate: {
-                validator: function (val) {
-                  if (typeof val === "undefined") return false;
-                  if (typeof val != "string" && val.trim().length === 0) return false;
-                  const regex = /^[a-z/\s/A-Z]{3,100}$/;
-                  return regex.test(String(val));
-                },
-                message: "Name can only contain letters",
-              }
+        validate: [ validation.isValidName , "please provide a valid last name"]
     },
     lname: { 
         type: String, 
         required: [true, "Please provide the last name"],
         trim : true,
-        validate: {
-                validator: function (val) {
-                  if (typeof val === "undefined") return false;
-                  if (typeof val != "string" && val.trim().length === 0) return false;
-                  const regex = /^[a-z/\s/A-Z]{3,100}$/;
-                  return regex.test(String(val));
-                },
-                message: "Name can only contain letters",
-              }
+        validate: [ validation.isValidName , "please provide a valid last name"]
     },
 
     email:  {
         type: String,
         required: [true, "Please provide your E-mail"],
         unique: true,
-        validate: [validator.isEmail, "Please provide a valid E-mail ID"],
+        validate: [ validation.isValidEmailId , "please provide a valid email id"]
       },
 
     profileImage: {
@@ -50,7 +34,7 @@ const UserSchema = new mongoose.Schema(
         required: [true, "Please provide your phone number"],
         unique: true,
         validate: [
-          validator.isMobilePhone,
+          validation.isValidMobile,
           "Please provide a valid phone number",
         ],
       },
@@ -92,4 +76,4 @@ const UserSchema = new mongoose.Schema(
 );
 
 //<----------------------< Exports : UserModel >----------------------->//
-module.exports = mongoose.model("UserModel", UserSchema);
+module.exports = mongoose.model("user", UserSchema);

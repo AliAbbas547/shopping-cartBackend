@@ -25,65 +25,37 @@ const createProducts = async function (req, res) {
 
 const getProductsData = async function (req, res) {
   try {
-    const queryParams = req.query;
+    let query = req.query;
 
-    let { size, name, priceGreaterThan, priceLessThan, priceSort } =
-      queryParams;
+    let { name, size, priceGreaterThan, priceLessThan, priceSort } = query;
+    let QueryValue = { isDeleted: false };
 
-    const filterQuery = { isDeleted: false };
+    if (name) {
+      QueryValue["title"] = { $regex: name, $options: "i" };
+    }
     if (size) {
-      size = size.toUpperCase().split(",");
-      if (!size)
-        return res.status(400).send({ status: false, msg: "provide size" });
-      filterQuery["availableSizes"] = { $in: size };
+      size = size.split(",");
+      size = size.map((x) => x.toUpperCase());
+      QueryValue["availableSizes"] = { $in: size };
+    }
+    if (priceGreaterThan && priceLessThan) {
+      QueryValue["price"] = { $gt: priceGreaterThan, $lt: priceLessThan };
+    } else if (priceGreaterThan) {
+      QueryValue["price"] = { $gt: priceGreaterThan };
+    } else if (priceLessThan) {
+      QueryValue["price"] = { $lt: priceLessThan };
     }
 
-    if (priceGreaterThan) {
-      // if (!valid.isValidPrice(priceGreaterThan))
-      //     return res.status(400).send({ status: false, msg: "provide priceGreaterThan in numeric" })
-      filterQuery["price"] = { $gt: priceGreaterThan };
-    }
-
-    if (priceLessThan) {
-      // if (!valid.isValidPrice(priceLessThan))
-      //     return res.status(400).send({ status: false, msg: "provide priceLessThan in numeric" })
-      filterQuery["price"] = { $lt: priceLessThan };
-    }
-
-    // if (valid.isValid(name)) {
-    //     filterQuery['title'] = { $regex: name, $options: "i" };
-    // };
-
-    // validation of priceSort
-    if (priceSort) {
-      if (!(priceSort == 1 || priceSort == -1)) {
-        return res.status(400).send({
-          status: false,
-          message: "Price sort only takes 1 or -1 as a value",
-        });
-      }
-      let filterProduct = await ProductsModel.find(filterQuery , { runValidators : true}).sort({
-        price: priceSort,
-      });
-      if (Object.keys(filterProduct).length == 0) {
-        return res.status(400).send({
-          status: false,
-          message: "No products found with this query",
-        });
-      }
-      return res
-        .status(200)
-        .send({ status: true, message: "Success", data: filterProduct });
-    }
-    const products = await ProductsModel.find(filterQuery).sort({ price: 1 });
-    if (Object.keys(products).length == 0) {
+    let data = await ProductsModel.find(QueryValue).sort({ price: priceSort });
+    if (data.length == 0) {
       return res
         .status(400)
-        .send({ status: false, message: "Product not found" });
+        .send({
+          status: false,
+          message: "no any product is present on the basis of your query ",
+        });
     }
-    return res
-      .status(200)
-      .send({ status: true, message: "Success", data: products });
+    return res.status(200).send({ status: true, data: data });
   } catch (err) {
     return errorHandler(err, res);
   }

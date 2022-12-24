@@ -17,7 +17,7 @@ const createCart = async function (req, res) {
     if (ProductData == null) {
       return res
         .status(400)
-        .send({ status: false, message: "productId is not correct" });
+        .send({ status: false, message: "productId is not correct" }); 
     }
     let price = ProductData.price;
 
@@ -27,7 +27,7 @@ const createCart = async function (req, res) {
       let data = {
         userId: userId,
         items: [{ productId: productId, quantity: quantity }],
-        totalPrice: (price * quantity).toFixed(2),
+        totalPrice: (price * quantity).toFixed(2), 
         totalItems: 1,
       };
       let createCart = await cartModel.create(data);
@@ -35,7 +35,7 @@ const createCart = async function (req, res) {
     } else {
       let items = cartData.items;
       let totalPrice = cartData.totalPrice;
-      let totalItems = cartData.totalItems;
+      let totalItems = cartData.totalItems; 
 
       let flag = 0;
       // let NewQuantity = 0;
@@ -85,6 +85,7 @@ const updateCart = async function (req, res) {
   try {
     let userId = req.params.userId;
     let productId = req.body.productId;
+    let removeProduct = req.body.removeProduct
     let cardData = await cartModel.findOne({ userId: userId }).lean();
     if (cardData == null) {
       res.status.send({
@@ -101,7 +102,7 @@ const updateCart = async function (req, res) {
         updatedData["items"] = array;
         updatedData["totalPrice"] =
         Number(cardData["totalPrice"]) - Number(productData["price"]);
-        if (array[i].quantity == 0) {
+        if (array[i].quantity == 0 || removeProduct == 0) {
           array.splice(i, 1);
         }
       }

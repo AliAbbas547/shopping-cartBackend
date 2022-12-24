@@ -6,7 +6,11 @@ const authentication = async function (req, res, next) {
   try {
     let bearerHeader = req.headers.authorization;
     let userId =req.params.userId
-    // const checkId = await userModel.findOne({ _id :userId })
+    const checkId = await userModel.findOne({ _id :userId })
+    if(checkId == null)
+    {
+      return res.status(400).send({ status : false , msg : "there is no user with this userid"})
+    }
     if (typeof bearerHeader == "undefined")
       return res
         .status(400)

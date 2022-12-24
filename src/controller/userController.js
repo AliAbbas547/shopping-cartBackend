@@ -96,10 +96,6 @@ const getUserData = async (req, res) => {
       .findById(id)
       .select({ createdAt: 0, updatedAt: 0, __v: 0 })
       .lean();
-    if (!data)
-      return res
-        .status(400)
-        .send({ message: "User not present in Database Pls Provie right Id" });
     const { address, ...userdata } = data;
     res.status(200).send({
       status: true,
