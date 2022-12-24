@@ -1,7 +1,6 @@
 const cartModel = require("../models/cartModel");
-const oderModel = require("../models/oderModel");
 const orderModel = require("../models/oderModel");
-
+const errorHandler =require('../errorHandling/errorHandling')
 const createOder = async function (req, res) {
   try {
     let userId = req.params.userId;
@@ -16,10 +15,10 @@ const createOder = async function (req, res) {
         cartData["totalQuantity"] + cartData["items"][i].quantity;
     }
     let oderData = { ...cartData, ...data };
-    const oder = await oderModel.create(oderData);
+    const oder = await orderModel.create(oderData);
     res.status(201).send({ msg: oder });
   } catch (err) {
-    res.status(500).send({ msg: err.message });
+    return errorHandler(err, res);
   }
 };
 const updateOrder = async function (req, res) {
@@ -56,7 +55,7 @@ const updateOrder = async function (req, res) {
         data: updatedData,
       });
   } catch (err) {
-    return res.status(500).send({ status: false, mwssage: err.message });
+    return errorHandler(err, res);
   }
 };
 module.exports = { createOder,updateOrder };

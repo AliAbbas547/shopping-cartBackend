@@ -26,7 +26,7 @@ function errorHandle(error, res) {
       });
     }
     if (error.name == "CastError") {
-      return res.status(400).send({ status: false, message: error.message });
+      return res.status(400).send({ status: false, message: `please provide ${error.kind} at ${error.stringValue}` });
     }
     if(error.message == "Unexpected end of JSON input")
     {

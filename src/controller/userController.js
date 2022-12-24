@@ -19,6 +19,10 @@ const createUser = async (req, res) => {
     let address = req.body.address;
     address = JSON.parse(address);
     data["address"] = address;
+    if(data['password'].length < 8 || data['password'].length > 15)
+    {
+      return res.status(400).send({ status : false , msg : "please enter a valid password" })
+    }
     data.password = await bcrypt.hash(data.password, 10);
     data.profileImage = uploadedFileURL;
     const datacreate = await userModel.create(data);

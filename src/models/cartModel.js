@@ -7,7 +7,7 @@ const cartSchema = new mongoose.Schema(
         userId: {
             type: ObjectId,
             ref: "User",
-            required: true,
+            required: [true, "Please provide the userId"],
             trim: true
         },
         items: [{
@@ -26,12 +26,12 @@ const cartSchema = new mongoose.Schema(
             }],
         totalPrice: {
             type: Number,
-            required: true,
+            required: [true, "Please provide the totalPrice"],
             trim: true
         },
         totalItems: {
             type: Number,
-            required: true,
+            required: [true, "Please provide the totalItems"],
             trim: true
         },
     }, { timestamps: true });

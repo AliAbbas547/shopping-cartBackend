@@ -77,7 +77,7 @@ const createCart = async function (req, res) {
       }
     }
   } catch (err) {
-    return res.status(500).send({ status: false, message: err.message });
+    return errorHandler(err, res);
   }
 };
 
@@ -131,7 +131,7 @@ const getCartData = async function (req, res) {
     }
     return res.status(200).send({ status: true, data: cartData });
   } catch (err) {
-    return res.status(500).send({ status: false, message: err.message });
+    return errorHandler(err, res);
   }
 };
 const deleteCartData = async function (req, res) {
@@ -165,7 +165,7 @@ const deleteCartData = async function (req, res) {
       .status(204)
       .send({ status: true, message: "cart deleted successfully" });
   } catch (err) {
-    return res.status(500).send({ status: false, message: err.message });
+    return errorHandler(err, res);
   }
 };
 module.exports = { createCart, updateCart, getCartData, deleteCartData };

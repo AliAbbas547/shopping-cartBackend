@@ -23,7 +23,7 @@ const createProducts = async function (req, res) {
   }
 };
 
-exports.getProductsData = async function (req, res) {
+const getProductsData = async function (req, res) {
   try {
     const queryParams = req.query;
 
@@ -62,10 +62,9 @@ exports.getProductsData = async function (req, res) {
           message: "Price sort only takes 1 or -1 as a value",
         });
       }
-
-      let filterProduct = await productModel
-        .find(filterQuery)
-        .sort({ price: priceSort });
+      let filterProduct = await ProductsModel.find(filterQuery , { runValidators : true}).sort({
+        price: priceSort,
+      });
       if (Object.keys(filterProduct).length == 0) {
         return res.status(400).send({
           status: false,
@@ -76,7 +75,7 @@ exports.getProductsData = async function (req, res) {
         .status(200)
         .send({ status: true, message: "Success", data: filterProduct });
     }
-    const products = await productModel.find(filterQuery).sort({ price: 1 });
+    const products = await ProductsModel.find(filterQuery).sort({ price: 1 });
     if (Object.keys(products).length == 0) {
       return res
         .status(400)
@@ -86,12 +85,19 @@ exports.getProductsData = async function (req, res) {
       .status(200)
       .send({ status: true, message: "Success", data: products });
   } catch (err) {
-    return res.status(500).send({ status: false, msg: err.message });
+    return errorHandler(err, res);
   }
 };
-exports.updateProductData = async function (req, res) {
+const updateProductData = async function (req, res) {
   try {
     let productId = req.params.productId;
+    let alreadyDeleted = await ProductsModel.findOne({
+      _id: productId,
+      isDeleted: true,
+    });
+    if (alreadyDeleted["isDeleted"] == true) {
+      res.status(400).send({ status: false, msg: "this product is  deleted" });
+    }
     let dataToUpdate = req.body;
     let { availableSizes, ...data } = dataToUpdate;
     let data1 = await ProductsModel.findOneAndUpdate(
@@ -100,18 +106,26 @@ exports.updateProductData = async function (req, res) {
         $addToSet: { availableSizes: availableSizes },
         $set: { data },
       },
-      { new: true, upsert: true }
+      { new: true, upsert: true, runValidators: true }
     );
 
     return res.status(200).send({ status: true, data: data1 });
   } catch (err) {
-    return res.status(500).send({ status: false, message: err.message });
+    return errorHandler(err, res);
   }
 };
-exports.deleteProductData = async function (req, res) {
+const deleteProductData = async function (req, res) {
   try {
     let productId = req.params.productId;
-
+    let alreadyDeleted = await ProductsModel.findOne({
+      _id: productId,
+      isDeleted: true,
+    });
+    if (alreadyDeleted["isDeleted"] == true) {
+      res
+        .status(400)
+        .send({ status: false, msg: "this product is already deleted" });
+    }
     let data = await ProductsModel.findOneAndUpdate(
       { _id: productId, isDeleted: false },
       { $set: { isDeleted: true } },
@@ -119,7 +133,12 @@ exports.deleteProductData = async function (req, res) {
     );
     return res.status(200).send({ status: true, data: data });
   } catch (err) {
-    return res.status(500).send({ status: false, message: err.message });
+    return errorHandler(err, res);
   }
 };
-module.exports = { createProducts };
+module.exports = {
+  createProducts,
+  getProductsData,
+  updateProductData,
+  deleteProductData,
+};

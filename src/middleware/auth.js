@@ -1,11 +1,12 @@
 const jwt = require("jsonwebtoken");
 const errorHandler = require("../errorHandling/errorHandling");
-
+const userModel = require('../models/userModel')
 //<-------------------------------------< Authentication >------------------------------------->//
-const authentication = function (req, res, next) {
+const authentication = async function (req, res, next) {
   try {
     let bearerHeader = req.headers.authorization;
-
+    let userId =req.params.userId
+    // const checkId = await userModel.findOne({ _id :userId })
     if (typeof bearerHeader == "undefined")
       return res
         .status(400)

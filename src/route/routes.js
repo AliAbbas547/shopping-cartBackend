@@ -3,7 +3,7 @@ const express = require('express');
 const { createUser, logInUserData, getUserData, updateUserData } = require('../controller/userController.js');
 const { authentication } = require('../middleware/auth.js');
 const router = express.Router();
-const { createProducts,getProductsData } = require('../controller/productcontroller')
+const { createProducts,getProductsData,updateProductData ,deleteProductData} = require('../controller/productcontroller')
 const {createCart ,updateCart ,getCartData,deleteCartData} = require('../controller/cartController')
 const {createOder ,updateOrder } = require('../controller/oderController')
 //<----------------------< Create User Data >-------------------------->//
@@ -18,7 +18,8 @@ router.put('/user/:userId/profile',authentication, updateUserData);
 
 router.post('/products', createProducts)
 router.get('/products',  getProductsData)
-
+router.put('/products/:productId', updateProductData)
+router.delete('/products/:productId', deleteProductData)
 
 router.post('/users/:userId/cart',createCart)
 router.put('/users/:userId/cart', updateCart)
