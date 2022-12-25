@@ -119,7 +119,8 @@ const updateUserData = async (req, res) => {
         .send({ status: false, message: "Body is Empty Pls provide the data" });
     const upadateUser = await userModel.findOneAndUpdate(
       { _id: id },
-      { $set: { ...data } }
+      { $set: { ...data }, },
+      { runValidators : true}
     );
     res.status(200).send({ status: true, msg: upadateUser });
   } catch (err) {
