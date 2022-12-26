@@ -20,7 +20,7 @@ const orderSchema = new mongoose.Schema(
     },
     totalItems: {
       type: Number,
-      required: [true, "Please provide the totalItems"],
+      required: [true, "Please provide the totalItems"]
     },
     totalQuantity: {
       type: Number,

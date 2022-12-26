@@ -30,5 +30,15 @@ const authentication = async function (req, res, next) {
   }
 };
 
+const authorization = async function ( req, res, next) {
+  try{
+    let userId= req.params.userId    
+    if (userId  == req.decode.userId ) return next();
+    else return res.status(403).send({ status: false, msg: "you are not authorised" });
+    
+  }catch(error){
+    return res.status(500).send({msg: error.message})
+  }
+}
 //<------------------------------< Exports : router >----------------------------------------->//
-module.exports = { authentication };
+module.exports={authentication,authorization}

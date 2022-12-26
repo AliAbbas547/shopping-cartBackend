@@ -4,29 +4,38 @@ const ProductsSchema= new mongoose.Schema({
     title: {
         type: String,
         required: [true, "Please provide the title"],
-        unique : true
+        unique : true,
+        trim: true
+        
       },
     description: {
         type: String,
         required: [true, "Please provide the description"],
+        trim: true
       },
     price: {
         type: Number,
         required: [true, "Please provide the price"],
+        trim: true
       },
     currencyId: {
         type: String,
         required: [true, "Please provide the currencyId"],
-      default:"INR"},
+      default:"INR",
+      trim: true},
     currencyFormat: {
         type: String,
         required: [true, "Please provide the currencyFormat"],
+        trim: true
       },
-    isFreeShipping: {type:Boolean,
-         default: false},
+    isFreeShipping: {
+         type:Boolean,
+         default: false,
+         trim: true},
     productImage: {
         type: String,
         required: [true, "Please provide the productImage"],
+        trim: true
       }, 
     style: String,
     availableSizes: {
