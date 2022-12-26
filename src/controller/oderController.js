@@ -23,10 +23,9 @@ const createOder = async function (req, res) {
 };
 const updateOrder = async function (req, res) {
   try {
-    let orderId = req.body.orderId;
+    let orderId  = req.body.orderId;
     let userId = req.params.userId;
     let oddata = await orderModel.findOne({
-      _id: orderId,
       userId: userId,
       cancellable: true,
       isDeleted: false,
@@ -36,7 +35,10 @@ const updateOrder = async function (req, res) {
         .status(404)
         .send({ status: false, message: "your request is not correct" });
     }
-
+    if(orderId != oddata._id)
+    {
+      res.status(400).send({ status : false , msg : "invalid orderId "})
+    }
     let data = {
       status: "cancled",
       isDeleted: true,
