@@ -3,22 +3,66 @@ const orderModel = require("../models/oderModel");
 const errorHandler =require('../errorHandling/errorHandling')
 const createOder = async function (req, res) {
   try {
-    let userId = req.params.userId;
+    let userId1 = req.params.userId;
     let data = req.body;
-    const cartData = await cartModel
-      .findOne({ userId: userId })
-      .select({ _id: 0, createdAt: 0, __v: 0, updatedAt: 0 })
+    let t1 = { userId: 1, items: 1, totalPrice: 1, totalItems: 1, _id: 0 };
+    let cartData = await cartModel.findOne({ userId: userId1 })
+      .select(t1)
       .lean();
-    cartData["totalQuantity"] = 0;
-    for (let i = 0; i <= cartData["items"].length - 1; i++) {
-      cartData["totalQuantity"] =
-        cartData["totalQuantity"] + cartData["items"][i].quantity;
+    if (userId1 != cartData.userId) {
+      return res.status(400).send({ message: "userId is not correct" });
     }
-    let oderData = { ...cartData, ...data };
-    const oder = await orderModel.create(oderData);
-    res.status(201).send({ msg: oder });
+    let items = cartData.items;
+
+    let notDeleted = [];
+
+    for (let i = 0; i < items.length; i++) {
+      let t1 = String(items[i].productId);
+      notDeleted.push(t1);
+    }
+    let check = [];
+
+    for (let i = 0; i < notDeleted.length; i++) {
+      let data = await ProductsModel.findOne({
+        _id: notDeleted[i],
+        isDeleted: false,
+      });
+
+      if (data == null) {
+        check.push(notDeleted[i]);
+        break;
+      }
+    }
+
+    for (let i = 0; i < items.length; i++) {
+      for (let j = 0; j < check.length; j++) {
+        if (check[j] == items[i].productId) {
+          items.splice(i, 1);
+        }
+      }
+    }
+
+    let price = 0;
+    let totalQuantity = 0;
+
+    for (let i = 0; i < items.length; i++) {
+      let data = await ProductsModel.findOne({
+        _id: items[i].productId,
+        isDeleted: false,
+      });
+      price += data.price * items[i].quantity;
+      totalQuantity += items[i].quantity;
+    }
+
+    cartData["totalQuantity"] = totalQuantity;
+    cartData["totalPrice"] = price;
+    cartData["totalItems"] = items.length;
+   
+
+    let createOrder = await orderModel.create(cartData);
+    return res.status(201).send({ status: true, data: createOrder });
   } catch (err) {
-    return errorHandler(err, res);
+    return res.status(500).send({ status: false, message: err.message });
   }
 };
 const updateOrder = async function (req, res) {
