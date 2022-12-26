@@ -21,7 +21,7 @@ const isValidEmailId = function (email) {
 
 const isValidPassword = function (password) {
   const passwordRegex =
-  /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-]+)(\.[a-zA-Z]{2,5}){1,2}$/;
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
   return passwordRegex.test(password);
 };
 //__________________________ Validations : Password  ___________________________________________

@@ -13,9 +13,12 @@ const createProducts = async function (req, res) {
     }
     let data = req.body;
     let availableSizes = req.body.availableSizes;
-    let availableS = availableSizes.split(",").map((x) => x.trim());
-    data["availableSizes"] = availableS;
+    if (availableSizes) {
+      let availableS = availableSizes.split(",").map((x) => x.trim());
+      data["availableSizes"] = availableS;
+    }
     data["productImage"] = uploadedFileURL;
+    data["currencyFormat"] = "₹";
     const productsData = await ProductsModel.create(data);
     return res.status(201).send({ status: true, data: productsData });
   } catch (err) {
@@ -48,12 +51,10 @@ const getProductsData = async function (req, res) {
 
     let data = await ProductsModel.find(QueryValue).sort({ price: priceSort });
     if (data.length == 0) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message: "no any product is present on the basis of your query ",
-        });
+      return res.status(400).send({
+        status: false,
+        message: "no any product is present on the basis of your query ",
+      });
     }
     return res.status(200).send({ status: true, data: data });
   } catch (err) {
@@ -67,16 +68,19 @@ const updateProductData = async function (req, res) {
       _id: productId,
       isDeleted: true,
     });
-    if (alreadyDeleted["isDeleted"] == true) {
-      res.status(400).send({ status: false, msg: "this product is  deleted" });
+    if (alreadyDeleted != null) {
+      return res
+        .status(400)
+        .send({ status: false, msg: "can not change deleted product" });
     }
     let dataToUpdate = req.body;
     let { availableSizes, ...data } = dataToUpdate;
+    availableSizes = availableSizes.split(",").map((x) => x.trim());
     let data1 = await ProductsModel.findOneAndUpdate(
       { _id: productId, isDeleted: false },
       {
         $addToSet: { availableSizes: availableSizes },
-        $set: { data },
+        $set: { ...data },
       },
       { new: true, upsert: true, runValidators: true }
     );
@@ -93,7 +97,7 @@ const deleteProductData = async function (req, res) {
       _id: productId,
       isDeleted: true,
     });
-    if (alreadyDeleted["isDeleted"] == true) {
+    if (alreadyDeleted != null) {
       res
         .status(400)
         .send({ status: false, msg: "this product is already deleted" });
@@ -103,7 +107,9 @@ const deleteProductData = async function (req, res) {
       { $set: { isDeleted: true } },
       { new: true }
     );
-    return res.status(200).send({ status: true, data: data });
+    return res
+      .status(200)
+      .send({ status: true, data: "product deleted Succesfully" });
   } catch (err) {
     return errorHandler(err, res);
   }

@@ -13,7 +13,6 @@ const createOder = async function (req, res) {
       return res.status(400).send({ message: "userId is not correct" });
     }
     let items = cartData.items;
-
     let notDeleted = [];
 
     for (let i = 0; i < items.length; i++) {
@@ -62,7 +61,7 @@ const createOder = async function (req, res) {
     let createOrder = await orderModel.create(cartData);
     return res.status(201).send({ status: true, data: createOrder });
   } catch (err) {
-    return res.status(500).send({ status: false, message: err.message });
+    return errorHandler(err, res);
   }
 };
 const updateOrder = async function (req, res) {

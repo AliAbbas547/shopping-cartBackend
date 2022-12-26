@@ -44,6 +44,10 @@ const UserSchema = new mongoose.Schema(
     password:  {
         type: String,
         required: [true, "Please provide the password"],
+        // validate: [
+        //   validation.isValidMobile,
+        //   "Please provide a valid password",
+        // ],
       },
 
     address: {
@@ -59,7 +63,6 @@ const UserSchema = new mongoose.Schema(
                 required: [true, "Please provide the pincode"],
                 trim: true, },
       },
-
       billing: {
         street: { type: String,
                 required: [true, "Please provide the street address"],

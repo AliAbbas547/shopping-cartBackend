@@ -19,10 +19,6 @@ const createUser = async (req, res) => {
     let address = req.body.address;
     address = JSON.parse(address)
     data["address"] = address;
-    if(!validation.isValidPassword(data["password"]))
-    {
-      return res.status(400).send({ status : false , msg : "please enter a valid password" })
-    }
     data.password = await bcrypt.hash(data.password, 10);
     data.profileImage = uploadedFileURL;
     const datacreate = await userModel.create(data);
@@ -48,7 +44,7 @@ const logInUserData = async (req, res) => {
       return res
         .status(400)
         .send({ status: false, message: "Pls provide the emailId" });
-    if (!validator.isEmail(email))
+    if (!validation.isValidEmailId(email))
       return res
         .status(400)
         .send({ status: false, message: "pls provide the Valid Email" });

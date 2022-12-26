@@ -8,6 +8,7 @@ const productModel = require("../models/productModel");
 const createCart = async function (req, res) {
   try {
     let userId = req.params.userId;
+    console.log("kjdfkljdsf")
     let data = req.body;
     let { productId, cartId, quantity } = data;
     if (!quantity) {
