@@ -5,9 +5,9 @@ const validation = require('../validation/validation')
 const UserSchema = new mongoose.Schema(
   {
     fname: { 
-        type: String, 
+        type: String,
+        trim : true, 
         required: [true, "Please provide the first name"],
-        trim : true,
         validate: [ validation.isValidName , "please provide a valid last name"]
     },
     lname: { 
@@ -21,6 +21,7 @@ const UserSchema = new mongoose.Schema(
         type: String,
         required: [true, "Please provide your E-mail"],
         unique: true,
+        trim : true,
         validate: [ validation.isValidEmailId , "please provide a valid email id"]
       },
 
@@ -33,6 +34,7 @@ const UserSchema = new mongoose.Schema(
         type: String,
         required: [true, "Please provide your phone number"],
         unique: true,
+        trim : true,
         validate: [
           validation.isValidMobile,
           "Please provide a valid phone number",

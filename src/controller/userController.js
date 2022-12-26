@@ -4,7 +4,7 @@ const aws = require("../AWS/AWS.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const errorHandler = require("../errorHandling/errorHandling");
-const validator = require("validator");
+const validation = require('../validation/validation')
 //<----------------------< Create : UserFunction >--------------------->//
 const createUser = async (req, res) => {
   try {
@@ -19,7 +19,7 @@ const createUser = async (req, res) => {
     let address = req.body.address;
     address = JSON.parse(address)
     data["address"] = address;
-    if(data['password'].length < 8 || data['password'].length > 15)
+    if(!validation.isValidPassword(data["password"]))
     {
       return res.status(400).send({ status : false , msg : "please enter a valid password" })
     }

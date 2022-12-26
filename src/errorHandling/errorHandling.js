@@ -41,9 +41,13 @@ function errorHandle(error, res) {
         message: "please provide address in json format",
       });
   }
-  if(error.message == "error is not defined")
-  {
-    return res.status(400).send({ status : false, msg : "please enter address in valid form"})
+  if (error.message == "Unexpected token u in JSON at position 0") {
+    return res
+      .status(400)
+      .send({
+        status: false,
+        message: "please enter all data including address,password,email",
+      });
   }
   return res.status(500).send({ status: false, message: error.message });
 }
