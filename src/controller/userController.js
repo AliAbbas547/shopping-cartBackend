@@ -17,7 +17,7 @@ const createUser = async (req, res) => {
     }
     let data = req.body;
     let address = req.body.address;
-    address = JSON.parse(address,errorHandler(error, res))
+    address = JSON.parse(address)
     data["address"] = address;
     if(data['password'].length < 8 || data['password'].length > 15)
     {
