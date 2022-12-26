@@ -41,6 +41,10 @@ function errorHandle(error, res) {
         message: "please provide address in json format",
       });
   }
+  if(error.message == "error is not defined")
+  {
+    return res.status(400).send({ status : false, msg : "please enter address in valid form"})
+  }
   return res.status(500).send({ status: false, message: error.message });
 }
 module.exports = errorHandle;
