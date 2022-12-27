@@ -3,7 +3,7 @@ const errorHandler = require("../errorHandling/errorHandling");
 const ProductsModel = require("../models/productModel");
 
 var { ObjectId } = require("mongodb");
-const productModel = require("../models/productModel");
+
 
 const createCart = async function (req, res) {
   try {
@@ -86,13 +86,13 @@ const updateCart = async function (req, res) {
     let { productId, cartId, removeProduct } = data;
     let ProductData = await ProductsModel.findOne({ _id: productId });
     let price = ProductData.price;
-    console.log(price);
+    console.log(price)
 
-    let cartData = await cartModel.findOne({ userId: userId });
+    let cartData = await cartModel.findOne({userId:userId });
     let items = cartData.items;
-
+   
     let totalPrice = cartData.totalPrice;
-    console.log(totalPrice);
+    console.log(totalPrice)
 
     if (removeProduct == 1) {
       let NewQuantity;
@@ -100,49 +100,45 @@ const updateCart = async function (req, res) {
       for (let i = 0; i < items.length; i++) {
         if (items[i].productId.toString() == productId) {
           NewQuantity = items[i].quantity;
-
+        
           flag = 1;
           if (items[i].quantity != 1) {
-            items[i].quantity = items[i].quantity - 1;
-          } else if (items[i].quantity == 1) {
+            items[i].quantity =items[i].quantity -1;
+          } else if(items[i].quantity == 1){
             items.splice(i, 1);
           }
         }
       }
       if (flag == 0) {
-        return res.status(400).send({
-          status: false,
-          message: "productId is not present in the cart",
-        });
+        return res
+          .status(400)
+          .send({
+            status: false,
+            message: "productId is not present in the cart",
+          });
       }
 
       if (NewQuantity != 1) {
         totalPrice = totalPrice - price;
         let data = {
           items: items,
-          totalPrice: price,
-          totalItems: items.length,
+          totalPrice: totalPrice,
+          totalItems:items.length
         };
 
         let updateCart = await cartModel.findOneAndUpdate(
-          { userId: userId },
+          { userId: userId},
           { $set: data },
           { new: true }
         );
         return res.status(200).send({ status: true, data: updateCart });
-      } else if (NewQuantity == 1) {
-        console.log(totalPrice, price);
-        totalPrice = totalPrice - price;
-
+      } else if(NewQuantity == 1){
+        console.log(totalPrice,price)
+        totalPrice= totalPrice- price
+       
         let updateCart = await cartModel.findOneAndUpdate(
           { _id: cartId },
-          {
-            $set: {
-              items: items,
-              totalItems: items.length,
-              totalPrice: totalPrice,
-            },
-          },
+          { $set: { items: items,totalItems:items.length,totalPrice:totalPrice } },
           { new: true }
         );
         return res.status(200).send({ status: true, data: updateCart });
@@ -158,15 +154,15 @@ const updateCart = async function (req, res) {
         }
       }
       if (flag == 1) {
-        totalPrice = totalPrice - price * quantity1;
+        totalPrice = totalPrice -( price * quantity1);
         let data = {
           items: items,
-          totalPrice: price,
-          totalItems: items.length,
+          totalPrice: totalPrice,
+          totalItems: items.length
         };
 
         let updateCart = await cartModel.findOneAndUpdate(
-          { userId: userId },
+          {userId:userId },
           { $set: data },
           { new: true }
         );
