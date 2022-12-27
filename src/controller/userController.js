@@ -4,7 +4,7 @@ const aws = require("../AWS/AWS.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const errorHandler = require("../errorHandling/errorHandling");
-const validation = require('../validation/validation')
+const validation = require("../validation/validation");
 //<----------------------< Create : UserFunction >--------------------->//
 const createUser = async (req, res) => {
   try {
@@ -17,15 +17,24 @@ const createUser = async (req, res) => {
     }
     let data = req.body;
     let address = req.body.address;
-    address = JSON.parse(address)
+    address = JSON.parse(address);
     data["address"] = address;
+    data.password = data.password.trim();
+    if (!validation.isValidPassword(data.password)) {
+      return res
+        .status(400)
+        .send({
+          status: false,
+          msg: "Password should contain Minimum eight and maximum 15 characters, at least one uppercase letter, one lowercase letter, one number and one special character",
+        });
+    }
     data.password = await bcrypt.hash(data.password, 10);
     data.profileImage = uploadedFileURL;
     const datacreate = await userModel.create(data);
 
     res.status(201).send({ status: true, data: datacreate });
   } catch (err) {
-      return errorHandler(err, res);
+    return errorHandler(err, res);
   }
 };
 
@@ -79,7 +88,7 @@ const logInUserData = async (req, res) => {
       userId: { userId: user._id, token: token },
     });
   } catch (err) {
-    return  errorHandler(err, res);
+    return errorHandler(err, res);
   }
 };
 
@@ -88,6 +97,7 @@ const logInUserData = async (req, res) => {
 const getUserData = async (req, res) => {
   try {
     const id = req.params.userId;
+
     const data = await userModel
       .findById(id)
       .select({ createdAt: 0, updatedAt: 0, __v: 0 })
@@ -100,7 +110,7 @@ const getUserData = async (req, res) => {
       userdata,
     });
   } catch (err) {
-    return  errorHandler(err, res);
+    return errorHandler(err, res);
   }
 };
 
@@ -109,18 +119,26 @@ const updateUserData = async (req, res) => {
   try {
     const id = req.params.userId;
     const data = req.body;
+    let uploadedFileURL;
+    let files = req.files;
+    if (files && files.length > 0) {
+      uploadedFileURL = await aws.uploadFile(files[0]);
+    }
+    if (uploadedFileURL) {
+      data["profileImage"] = uploadedFileURL;
+    }
     if (Object.keys(data).length == 0)
       return res
         .status(400)
         .send({ status: false, message: "Body is Empty Pls provide the data" });
     const upadateUser = await userModel.findOneAndUpdate(
       { _id: id },
-      { $set: { ...data }, },
-      { runValidators : true}
+      { $set: { ...data } },
+      { runValidators: true }
     );
     res.status(200).send({ status: true, msg: upadateUser });
   } catch (err) {
-    return  errorHandler(err, res);
+    return errorHandler(err, res);
   }
 };
 

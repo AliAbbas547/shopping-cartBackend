@@ -1,6 +1,7 @@
 const ProductsModel = require("../models/productModel");
 const aws = require("../aws/aws");
 const errorHandler = require("../errorHandling/errorHandling");
+const validation = require('../validation/validation')
 
 const createProducts = async function (req, res) {
   try {
@@ -11,6 +12,7 @@ const createProducts = async function (req, res) {
     } else {
       return res.status(400).send({ msg: "No file found" });
     }
+    data.isFreeShipping = data.isFreeShipping.trim()
     let data = req.body;
     let availableSizes = req.body.availableSizes;
     if (availableSizes) {
@@ -25,7 +27,26 @@ const createProducts = async function (req, res) {
     return errorHandler(err, res);
   }
 };
-
+const getProductsDataById = async function (req, res) {
+  try {
+    let productId = req.params.productId;
+    if(!validation.isValidObjectId(productId)){
+      return res.status(400).send({status:false,message:"productId is not correct"})
+    }
+    let data = await ProductsModel.findOne({ _id: productId ,isDeleted : false});
+    if (data == null) {
+      return res
+        .status(400)
+        .send({
+          status: false,
+          message: "no any data is present with this productId",
+        });
+    }
+    return res.status(200).send({ status: true, data: data });
+  } catch (err) {
+    return res.status(500).send({ status: false, message: err.message });
+  }
+};
 const getProductsData = async function (req, res) {
   try {
     let query = req.query;
@@ -119,4 +140,5 @@ module.exports = {
   getProductsData,
   updateProductData,
   deleteProductData,
+  getProductsDataById
 };

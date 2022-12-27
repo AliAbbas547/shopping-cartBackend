@@ -1,11 +1,13 @@
 const mongoose = require("mongoose")
+const validation = require('../validation/validation')
 
 const ProductsSchema= new mongoose.Schema({
     title: {
         type: String,
         required: [true, "Please provide the title"],
         unique : true,
-        trim: true
+        trim: true,
+        validate: [ validation.isValidName , "please provide a valid Title"]
         
       },
     description: {

@@ -11,6 +11,7 @@ const router = express.Router();
 const {
   createProducts,
   getProductsData,
+  getProductsDataById,
   updateProductData,
   deleteProductData,
 } = require("../controller/productcontroller");
@@ -23,12 +24,13 @@ const {
 const { createOder, updateOrder } = require("../controller/oderController");
 
 router.post("/register", createUser);
-router.get("/login", logInUserData);
+router.post("/login", logInUserData);
 router.get("/user/:userId/profile", authentication,authorization, getUserData);
 router.put("/user/:userId/profile", authentication,authorization, updateUserData);
 
 router.post("/products", createProducts);
 router.get("/products", getProductsData);
+router.get('/products/:productId',getProductsDataById)
 router.put("/products/:productId", updateProductData);
 router.delete("/products/:productId", deleteProductData);
 

@@ -21,14 +21,14 @@ const isValidEmailId = function (email) {
 
 const isValidPassword = function (password) {
   const passwordRegex =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/;
   return passwordRegex.test(password);
 };
 //__________________________ Validations : Password  ___________________________________________
 
 const isValidMobile = function (mobile) {
   const MobileRegex =
-  /^(\+\d{1,3}[- ]?)?\d{10}$/;
+  /^[0]?[6789]\d{9}$/;
   return MobileRegex.test(mobile);
 };
 //__________________________ Validations : Values ___________________________________________
@@ -44,7 +44,20 @@ const isValid = function (value) {
 const isValidObjectId = function (objectId) {
   return mongoose.Types.ObjectId.isValid(objectId);
 };
+//__________________________ Validations :  PinCode ___________________________________________
 
+const isValidPincode = function (pincode) {
+  const PinCodeRegex =
+  /^[1-9]{1}[0-9]{5}$/;;
+  return PinCodeRegex.test(mobile);
+};
+//__________________________ Validations :  PinCode ___________________________________________
+
+const isValidTitle = function (title) {
+  const TitleRegex =
+  /^[1-9]{1}[0-9]{5}$/;;
+  return TitleRegex.test(title);
+};
 //__________________________ Export : Modules  ___________________________________________
 
 module.exports = {
@@ -53,5 +66,7 @@ module.exports = {
   isValidName,
   isValidPassword,
   isValidObjectId,
-  isValidMobile
+  isValidMobile,
+  isValidPincode,
+  isValidTitle
 };

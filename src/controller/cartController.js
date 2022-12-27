@@ -8,7 +8,6 @@ const productModel = require("../models/productModel");
 const createCart = async function (req, res) {
   try {
     let userId = req.params.userId;
-    console.log("kjdfkljdsf")
     let data = req.body;
     let { productId, cartId, quantity } = data;
     if (!quantity) {
@@ -39,11 +38,9 @@ const createCart = async function (req, res) {
       let totalItems = cartData.totalItems; 
 
       let flag = 0;
-      // let NewQuantity = 0;
       for (let i = 0; i < items.length; i++) {
         if (items[i].productId.toString() == productId) {
           items[i].quantity += quantity;
-          // NewQuantity = items[i].quantity
           flag = 1;
         }
       }
@@ -96,6 +93,7 @@ const updateCart = async function (req, res) {
     }
     let updatedData = {};
     let productData = await productModel.findOne({ productId: productId });
+    console.log(productData)
     let array = cardData["items"];
     for (let i = 0; i <= array.length - 1; i++) {
       if (productId == array[i].productId) {
@@ -103,7 +101,10 @@ const updateCart = async function (req, res) {
         updatedData["items"] = array;
         updatedData["totalPrice"] =
         Number(cardData["totalPrice"]) - Number(productData["price"]);
+        console.log(updatedData["totalPrice"],cardData["totalPrice"],productData["price"])
         if (array[i].quantity == 0 || removeProduct == 0) {
+          updatedData["totalPrice"] =
+          Number(cardData["totalPrice"]) - (Number(productData["price"]*(array[i].quantity-1)));
           array.splice(i, 1);
         }
       }
