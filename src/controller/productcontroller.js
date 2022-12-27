@@ -5,6 +5,7 @@ const validation = require('../validation/validation')
 
 const createProducts = async function (req, res) {
   try {
+    let data = req.body;
     let uploadedFileURL;
     let files = req.files;
     if (files && files.length > 0) {
@@ -12,8 +13,7 @@ const createProducts = async function (req, res) {
     } else {
       return res.status(400).send({ msg: "No file found" });
     }
-    data.isFreeShipping = data.isFreeShipping.trim()
-    let data = req.body;
+    data.isFreeShipping = (data.isFreeShipping)
     let availableSizes = req.body.availableSizes;
     if (availableSizes) {
       let availableS = availableSizes.split(",").map((x) => x.trim());

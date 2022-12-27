@@ -34,8 +34,8 @@ router.get('/products/:productId',getProductsDataById)
 router.put("/products/:productId", updateProductData);
 router.delete("/products/:productId", deleteProductData);
 
-router.post("/users/:userId/cart", authentication,authorization, createCart);
-router.put("/users/:userId/cart", authentication,authorization, updateCart);
+router.post("/users/:userId/cart",  createCart);
+router.put("/users/:userId/cart", updateCart);
 router.get("/users/:userId/cart", authentication,authorization, getCartData);
 router.delete("/users/:userId/cart", authentication,authorization, deleteCartData);
 

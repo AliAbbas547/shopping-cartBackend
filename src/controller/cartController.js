@@ -17,7 +17,7 @@ const createCart = async function (req, res) {
     if (ProductData == null) {
       return res
         .status(400)
-        .send({ status: false, message: "productId is not correct" }); 
+        .send({ status: false, message: "productId is not correct" });
     }
     let price = ProductData.price;
 
@@ -27,7 +27,7 @@ const createCart = async function (req, res) {
       let data = {
         userId: userId,
         items: [{ productId: productId, quantity: quantity }],
-        totalPrice: (price * quantity).toFixed(2), 
+        totalPrice: (price * quantity).toFixed(2),
         totalItems: 1,
       };
       let createCart = await cartModel.create(data);
@@ -35,7 +35,7 @@ const createCart = async function (req, res) {
     } else {
       let items = cartData.items;
       let totalPrice = cartData.totalPrice;
-      let totalItems = cartData.totalItems; 
+      let totalItems = cartData.totalItems;
 
       let flag = 0;
       for (let i = 0; i < items.length; i++) {
@@ -49,7 +49,7 @@ const createCart = async function (req, res) {
         let data = {
           totalPrice: price,
           items: items,
-          totalItems : items.length
+          totalItems: items.length,
         };
         let updateCart = await cartModel.findOneAndUpdate(
           { userId: userId },
@@ -82,40 +82,101 @@ const createCart = async function (req, res) {
 const updateCart = async function (req, res) {
   try {
     let userId = req.params.userId;
-    let productId = req.body.productId;
-    let removeProduct = req.body.removeProduct
-    let cardData = await cartModel.findOne({ userId: userId }).lean();
-    if (cardData == null) {
-      res.status.send({
-        status: false,
-        msg: "there is no cart with this user id",
-      });
-    }
-    let updatedData = {};
-    let productData = await productModel.findOne({ productId: productId });
-    console.log(productData)
-    let array = cardData["items"];
-    for (let i = 0; i <= array.length - 1; i++) {
-      if (productId == array[i].productId) {
-        array[i].quantity = array[i].quantity - 1;
-        updatedData["items"] = array;
-        updatedData["totalPrice"] =
-        Number(cardData["totalPrice"]) - Number(productData["price"]);
-        console.log(updatedData["totalPrice"],cardData["totalPrice"],productData["price"])
-        if (array[i].quantity == 0 || removeProduct == 0) {
-          updatedData["totalPrice"] =
-          Number(cardData["totalPrice"]) - (Number(productData["price"]*(array[i].quantity-1)));
-          array.splice(i, 1);
+    let data = req.body;
+    let { productId, cartId, removeProduct } = data;
+    let ProductData = await ProductsModel.findOne({ _id: productId });
+    let price = ProductData.price;
+    console.log(price);
+
+    let cartData = await cartModel.findOne({ userId: userId });
+    let items = cartData.items;
+
+    let totalPrice = cartData.totalPrice;
+    console.log(totalPrice);
+
+    if (removeProduct == 1) {
+      let NewQuantity;
+      let flag = 0;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].productId.toString() == productId) {
+          NewQuantity = items[i].quantity;
+
+          flag = 1;
+          if (items[i].quantity != 1) {
+            items[i].quantity = items[i].quantity - 1;
+          } else if (items[i].quantity == 1) {
+            items.splice(i, 1);
+          }
         }
       }
+      if (flag == 0) {
+        return res.status(400).send({
+          status: false,
+          message: "productId is not present in the cart",
+        });
+      }
+
+      if (NewQuantity != 1) {
+        totalPrice = totalPrice - price;
+        let data = {
+          items: items,
+          totalPrice: price,
+          totalItems: items.length,
+        };
+
+        let updateCart = await cartModel.findOneAndUpdate(
+          { userId: userId },
+          { $set: data },
+          { new: true }
+        );
+        return res.status(200).send({ status: true, data: updateCart });
+      } else if (NewQuantity == 1) {
+        console.log(totalPrice, price);
+        totalPrice = totalPrice - price;
+
+        let updateCart = await cartModel.findOneAndUpdate(
+          { _id: cartId },
+          {
+            $set: {
+              items: items,
+              totalItems: items.length,
+              totalPrice: totalPrice,
+            },
+          },
+          { new: true }
+        );
+        return res.status(200).send({ status: true, data: updateCart });
+      }
+    } else {
+      let flag = 0;
+      let quantity1;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].productId.toString() == productId) {
+          quantity1 = items[i].quantity;
+          items.splice(i, 1);
+          flag = 1;
+        }
+      }
+      if (flag == 1) {
+        totalPrice = totalPrice - price * quantity1;
+        let data = {
+          items: items,
+          totalPrice: price,
+          totalItems: items.length,
+        };
+
+        let updateCart = await cartModel.findOneAndUpdate(
+          { userId: userId },
+          { $set: data },
+          { new: true }
+        );
+        return res.status(200).send({ status: true, data: updateCart });
+      } else {
+        return res
+          .status(400)
+          .send({ status: false, message: " your request is not correct" });
+      }
     }
-    updatedData["totalItems"] = array.length;
-    let finalUpdate = await cartModel.findOneAndUpdate(
-      { userId: userId },
-      { $set: updatedData },
-      { new: true }
-    );
-    res.status(200).send({ msg: finalUpdate });
   } catch (err) {
     return errorHandler(err, res);
   }
