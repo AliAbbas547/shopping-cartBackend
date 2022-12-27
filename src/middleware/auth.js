@@ -1,16 +1,15 @@
 const jwt = require("jsonwebtoken");
 const errorHandler = require("../errorHandling/errorHandling");
 const userModel = require("../models/userModel");
+const validation = require("../validation/validation");
 //<-------------------------------------< Authentication >------------------------------------->//
 const authentication = async function (req, res, next) {
   try {
     let bearerHeader = req.headers.authorization;
     let userId = req.params.userId;
-    const checkId = await userModel.findOne({ _id: userId });
-    if (checkId == null) {
-      return res
-        .status(400)
-        .send({ status: false, msg: "there is no user with this userid" });
+    if(!validation.isValidObjectId(userId))
+    {
+      return res.status(400).send({ status : false , msg : "please enter the valid objectId"})
     }
     if (typeof bearerHeader == "undefined")
       return res.status(400).send({
@@ -41,5 +40,18 @@ const authorization = async function (req, res, next) {
     return res.status(500).send({ msg: error.message });
   }
 };
+const checkuserId = async function (req, res, next) {
+  try {
+    let userId = req.params.userId;
+    let validuser = await userModel.findById(userId)
+    if(validuser == null)
+    {
+     return res.status(404).send({ status : false , msg : "user id not found in Database"})
+    }
+    next()
+  } catch (error) {
+    return res.status(500).send({ msg: error.message });
+  }
+};
 //<------------------------------< Exports : router >----------------------------------------->//
-module.exports = { authentication, authorization };
+module.exports = { authentication, authorization,checkuserId };

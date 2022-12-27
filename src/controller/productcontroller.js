@@ -1,7 +1,7 @@
 const ProductsModel = require("../models/productModel");
 const aws = require("../aws/aws");
 const errorHandler = require("../errorHandling/errorHandling");
-const validation = require('../validation/validation')
+const validation = require("../validation/validation");
 
 const createProducts = async function (req, res) {
   try {
@@ -13,14 +13,12 @@ const createProducts = async function (req, res) {
     } else {
       return res.status(400).send({ msg: "No file found" });
     }
-    data.isFreeShipping = (data.isFreeShipping)
     let availableSizes = req.body.availableSizes;
     if (availableSizes) {
       let availableS = availableSizes.split(",").map((x) => x.trim());
       data["availableSizes"] = availableS;
     }
     data["productImage"] = uploadedFileURL;
-    data["currencyFormat"] = "₹";
     const productsData = await ProductsModel.create(data);
     return res.status(201).send({ status: true, data: productsData });
   } catch (err) {
@@ -30,17 +28,20 @@ const createProducts = async function (req, res) {
 const getProductsDataById = async function (req, res) {
   try {
     let productId = req.params.productId;
-    if(!validation.isValidObjectId(productId)){
-      return res.status(400).send({status:false,message:"productId is not correct"})
-    }
-    let data = await ProductsModel.findOne({ _id: productId ,isDeleted : false});
-    if (data == null) {
+    if (!validation.isValidObjectId(productId)) {
       return res
         .status(400)
-        .send({
-          status: false,
-          message: "no any data is present with this productId",
-        });
+        .send({ status: false, message: "productId is not correct" });
+    }
+    let data = await ProductsModel.findOne({
+      _id: productId,
+      isDeleted: false,
+    });
+    if (data == null) {
+      return res.status(400).send({
+        status: false,
+        message: "no any data is present with this productId",
+      });
     }
     return res.status(200).send({ status: true, data: data });
   } catch (err) {
@@ -63,11 +64,11 @@ const getProductsData = async function (req, res) {
       QueryValue["availableSizes"] = { $in: size };
     }
     if (priceGreaterThan && priceLessThan) {
-      QueryValue["price"] = { $gt: priceGreaterThan, $lt: priceLessThan };
+      QueryValue["price"] = { $gte: priceGreaterThan, $lte: priceLessThan };
     } else if (priceGreaterThan) {
-      QueryValue["price"] = { $gt: priceGreaterThan };
+      QueryValue["price"] = { $gte: priceGreaterThan };
     } else if (priceLessThan) {
-      QueryValue["price"] = { $lt: priceLessThan };
+      QueryValue["price"] = { $lte: priceLessThan };
     }
 
     let data = await ProductsModel.find(QueryValue).sort({ price: priceSort });
@@ -95,6 +96,11 @@ const updateProductData = async function (req, res) {
         .send({ status: false, msg: "can not change deleted product" });
     }
     let dataToUpdate = req.body;
+    if (Object.keys(dataToUpdate).length == 0)
+      return res.status(400).send({
+        status: false,
+        message: "Pls provide data in Body",
+      });
     let { availableSizes, ...data } = dataToUpdate;
     availableSizes = availableSizes.split(",").map((x) => x.trim());
     let data1 = await ProductsModel.findOneAndUpdate(
@@ -114,13 +120,23 @@ const updateProductData = async function (req, res) {
 const deleteProductData = async function (req, res) {
   try {
     let productId = req.params.productId;
+    if (!validation.isValidObjectId(productId)) {
+      return res
+        .status(400)
+        .send({ status: false, msg: "Please Provide Valid Project ID" });
+    }
     let alreadyDeleted = await ProductsModel.findOne({
       _id: productId,
-      isDeleted: true,
     });
-    if (alreadyDeleted != null) {
-      res
-        .status(400)
+    if(alreadyDeleted == null)
+    {
+      return res
+      .status(404)
+      .send({ status: false, msg: "this productId is not exist in Database" });
+    }
+    if (alreadyDeleted['isDeleted'] == true) {
+      return res
+        .status(404)
         .send({ status: false, msg: "this product is already deleted" });
     }
     let data = await ProductsModel.findOneAndUpdate(
@@ -140,5 +156,5 @@ module.exports = {
   getProductsData,
   updateProductData,
   deleteProductData,
-  getProductsDataById
+  getProductsDataById,
 };

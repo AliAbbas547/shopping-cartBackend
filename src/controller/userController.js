@@ -13,7 +13,7 @@ const createUser = async (req, res) => {
     if (files && files.length > 0) {
       uploadedFileURL = await aws.uploadFile(files[0]);
     } else {
-      return res.status(400).send({ msg: "No file found" });
+      return res.status(400).send({ msg: "No Profile image is found" });
     }
     let data = req.body;
     let address = req.body.address;

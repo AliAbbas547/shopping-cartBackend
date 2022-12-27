@@ -10,8 +10,13 @@ const createCart = async function (req, res) {
     let userId = req.params.userId;
     let data = req.body;
     let { productId, cartId, quantity } = data;
+    quantity = Number(quantity)
     if (!quantity) {
       quantity = 1;
+    }
+    if(quantity < 0 || typeof(quantity) != "number" )
+    {
+      return res.status(400).send({ status : false , msg : "quantity must be positive number"})
     }
     let ProductData = await ProductsModel.findOne({ _id: productId });
     if (ProductData == null) {
@@ -84,15 +89,18 @@ const updateCart = async function (req, res) {
     let userId = req.params.userId;
     let data = req.body;
     let { productId, cartId, removeProduct } = data;
+    let x  = removeProduct
+    if(!( x == "0" || x == "1"))
+    {
+      return res.status(400).send({ status :false , msg : "please provide valid data at removeProduct "})
+    }
     let ProductData = await ProductsModel.findOne({ _id: productId });
     let price = ProductData.price;
-    console.log(price)
 
     let cartData = await cartModel.findOne({userId:userId });
     let items = cartData.items;
    
     let totalPrice = cartData.totalPrice;
-    console.log(totalPrice)
 
     if (removeProduct == 1) {
       let NewQuantity;
@@ -133,7 +141,6 @@ const updateCart = async function (req, res) {
         );
         return res.status(200).send({ status: true, data: updateCart });
       } else if(NewQuantity == 1){
-        console.log(totalPrice,price)
         totalPrice= totalPrice- price
        
         let updateCart = await cartModel.findOneAndUpdate(
@@ -197,33 +204,27 @@ const getCartData = async function (req, res) {
 const deleteCartData = async function (req, res) {
   try {
     let userId = req.params.userId;
-    let cartData = await CartModel.findOne({ userId: userId });
-    console.log(cartData);
+    let cartData = await cartModel.findOne({ userId: userId });
     if (cartData == null) {
       return res
         .status(404)
         .send({ status: false, message: "this user has no any cart details" });
     }
-    let items = cartData.items;
-    console.log(items);
+    let items = cartData.items; 
     let newItems = items.splice(0, items.length);
-    console.log(items);
-
     let data = {
       items: items,
       totalPrice: 0,
       totalItems: 0,
     };
-
-    let deleteCartData = await CartModel.findOneAndUpdate(
+    let deleteCartData = await cartModel.findOneAndUpdate(
       { userId: userId },
       { $set: data },
       { new: true }
     );
-
     return res
       .status(204)
-      .send({ status: true, message: "cart deleted successfully" });
+      .send({ status: true, message: "cart deleted successfully"});
   } catch (err) {
     return errorHandler(err, res);
   }

@@ -55,7 +55,7 @@ const isValidPincode = function (pincode) {
 
 const isValidTitle = function (title) {
   const TitleRegex =
-  /^[1-9]{1}[0-9]{5}$/;;
+  /^([a-zA-Z 0-9])+$/;
   return TitleRegex.test(title);
 };
 //__________________________ Export : Modules  ___________________________________________

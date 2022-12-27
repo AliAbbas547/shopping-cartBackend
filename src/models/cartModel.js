@@ -33,7 +33,7 @@ const cartSchema = new mongoose.Schema(
             type: Number,
             required: [true, "Please provide the totalItems"],
             trim: true
-        },
+        }
     }, { timestamps: true });
 
 

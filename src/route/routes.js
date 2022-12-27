@@ -6,7 +6,7 @@ const {
   getUserData,
   updateUserData,
 } = require("../controller/userController.js");
-const {authentication,authorization} = require("../middleware/auth.js");
+const {authentication,authorization,checkuserId} = require("../middleware/auth.js");
 const router = express.Router();
 const {
   createProducts,
@@ -25,8 +25,8 @@ const { createOder, updateOrder } = require("../controller/oderController");
 
 router.post("/register", createUser);
 router.post("/login", logInUserData);
-router.get("/user/:userId/profile", authentication,authorization, getUserData);
-router.put("/user/:userId/profile", authentication,authorization, updateUserData);
+router.get("/user/:userId/profile", authentication,authorization,checkuserId, getUserData);
+router.put("/user/:userId/profile", authentication,authorization,checkuserId, updateUserData);
 
 router.post("/products", createProducts);
 router.get("/products", getProductsData);
@@ -34,12 +34,12 @@ router.get('/products/:productId',getProductsDataById)
 router.put("/products/:productId", updateProductData);
 router.delete("/products/:productId", deleteProductData);
 
-router.post("/users/:userId/cart",  createCart);
-router.put("/users/:userId/cart", updateCart);
-router.get("/users/:userId/cart", authentication,authorization, getCartData);
-router.delete("/users/:userId/cart", authentication,authorization, deleteCartData);
+router.post("/users/:userId/cart", authentication,authorization,checkuserId, createCart);
+router.put("/users/:userId/cart", authentication,authorization,checkuserId,updateCart);
+router.get("/users/:userId/cart", authentication,authorization,checkuserId, getCartData);
+router.delete("/users/:userId/cart", authentication,authorization,checkuserId, deleteCartData);
 
-router.post("/users/:userId/orders", authentication,authorization, createOder);
-router.put("/users/:userId/orders", authentication,authorization, updateOrder);
+router.post("/users/:userId/orders",  createOder);
+router.put("/users/:userId/orders", updateOrder);
 //<----------------------< Exports : router >-------------------------->//
 module.exports = router;

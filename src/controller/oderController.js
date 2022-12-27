@@ -6,10 +6,10 @@ const createOder = async function (req, res) {
     let userId1 = req.params.userId;
     let data = req.body;
     let cartId = req.body.cartId;
-    let t1 = { userId: 1, items: 1, totalPrice: 1, totalItems: 1, _id: 0 };
+    let t1 = { userId: 1, items: 1, totalPrice: 1, totalItems: 1, _id: 1 };
     let cartData = await cartModel
       .findOne({ userId: userId1 })
-      .select(t1)
+      // .select(t1)
       .lean();
     if (cartData == null) {
       return res
@@ -50,7 +50,7 @@ const updateOrder = async function (req, res) {
         .send({ status: false, message: "your request is not correct" });
     }
     if (orderId != oddata._id) {
-      res.status(400).send({ status: false, msg: "invalid orderId " });
+      return res.status(400).send({ status: false, msg: "invalid orderId " });
     }
 
     let check = oddata.cancellable;
@@ -72,21 +72,14 @@ const updateOrder = async function (req, res) {
         data: updatedData,
       });
     } else {
-      let updatedData = await orderModel.findOneAndUpdate(
-        { _id: orderId, userId: userId },
-        {
-          $set: {
-            status: "completed",
-          },
-        },
-        { new: true }
-      );
-      return res.status(200).send({
-        status: true,
-        message: "updated Successfully",
-        data: updatedData,
+    
+      return res.status(400).send({
+        status: false,
+        message: "order can't be cancelled",
+        
       });
     }
+
   } catch (err) {
     return errorHandler(err, res);
   }
