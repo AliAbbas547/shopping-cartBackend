@@ -19,6 +19,16 @@ const createUser = async (req, res) => {
     let address = req.body.address;
     address = JSON.parse(address);
     data["address"] = address;
+    if(data["address"])
+    {
+      console.log("hello")
+      let { shipping ,billing  } = data["address"] 
+      console.log(shipping.city,shipping.street,shipping.pincode, billing.city ,billing.street,billing.pincode)
+      if((shipping.city==undefined  || shipping.street==undefined || shipping.pincode==undefined || billing.city==undefined || billing.street==undefined || billing.pincode==undefined))
+      {
+         return res.status(400).send({ status : false , msg : "city,street and pincode is mandatory for shipping and billing address"})
+      }
+    }
     data.password = data.password.trim();
     if (!validation.isValidPassword(data.password)) {
       return res
@@ -31,9 +41,8 @@ const createUser = async (req, res) => {
     data.password = await bcrypt.hash(data.password, 10);
     data.profileImage = uploadedFileURL;
     const datacreate = await userModel.create(data);
-
     res.status(201).send({ status: true, data: datacreate });
-  } catch (err) {
+  } catch(err) {
     return errorHandler(err, res);
   }
 };

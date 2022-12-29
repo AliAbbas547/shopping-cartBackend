@@ -39,7 +39,7 @@ router.put("/users/:userId/cart", authentication,authorization,checkuserId,updat
 router.get("/users/:userId/cart", authentication,authorization,checkuserId, getCartData);
 router.delete("/users/:userId/cart", authentication,authorization,checkuserId, deleteCartData);
 
-router.post("/users/:userId/orders",  createOder);
-router.put("/users/:userId/orders", updateOrder);
+router.post("/users/:userId/orders", authentication,authorization,checkuserId, createOder);
+router.put("/users/:userId/orders", authentication,authorization,checkuserId,updateOrder);
 //<----------------------< Exports : router >-------------------------->//
 module.exports = router;

@@ -150,7 +150,7 @@ const updateCart = async function (req, res) {
         );
         return res.status(200).send({ status: true, data: updateCart });
       }
-    } else {
+    } else if(removeProduct == 0) {
       let flag = 0;
       let quantity1;
       for (let i = 0; i < items.length; i++) {

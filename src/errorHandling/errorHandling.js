@@ -49,6 +49,6 @@ function errorHandle(error, res) {
         message: "please enter all data including address,password,email",
       });
   }
-  return res.status(500).send({ status: false, message: error.message });
+  return res.status(500).send({ status: false, message: error });
 }
 module.exports = errorHandle;

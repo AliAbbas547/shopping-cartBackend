@@ -102,12 +102,13 @@ const updateProductData = async function (req, res) {
         message: "Pls provide data in Body",
       });
     let { availableSizes, ...data } = dataToUpdate;
-    availableSizes = availableSizes.split(",").map((x) => x.trim());
+    if(availableSizes){
+    availableSizes = availableSizes.split(",").map((x) => x.trim()); }
     let data1 = await ProductsModel.findOneAndUpdate(
       { _id: productId, isDeleted: false },
       {
         $addToSet: { availableSizes: availableSizes },
-        $set: { ...data },
+        $set: { ...data },  
       },
       { new: true, upsert: true, runValidators: true }
     );
