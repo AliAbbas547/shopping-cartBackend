@@ -15,6 +15,14 @@ const ProductsSchema = new mongoose.Schema(
       required: [true, "Please provide the description"],
       trim: true,
     },
+    gender:{
+      type: String,
+      require: [true, "Please Choose gender"]
+    },
+    category:{
+      type: String,
+      required: [true, "Please provide the category"]
+    },
     price: {
       type: Number,
       required: [true, "Please provide the price"],
