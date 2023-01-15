@@ -14,6 +14,7 @@ const {
   getProductsDataById,
   updateProductData,
   deleteProductData,
+  ProductData
 } = require("../controller/productcontroller");
 const {
   createCart,
@@ -30,9 +31,10 @@ router.put("/user/:userId/profile", authentication,authorization,checkuserId, up
 
 router.post("/products", createProducts);
 router.get("/products", getProductsData);
-router.get('/products/:productId',getProductsDataById)
+router.get('/product/:productId',getProductsDataById)
 router.put("/products/:productId", updateProductData);
 router.delete("/products/:productId", deleteProductData);
+router.get('/products/:gender',ProductData)
 
 router.post("/users/:userId/cart", authentication,authorization,checkuserId, createCart);
 router.put("/users/:userId/cart", authentication,authorization,checkuserId,updateCart);

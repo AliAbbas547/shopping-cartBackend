@@ -152,10 +152,30 @@ const deleteProductData = async function (req, res) {
     return errorHandler(err, res);
   }
 };
+const ProductData = async function(req,res){
+  try{
+    const gender = req.params.gender
+    const category = req.query.category
+    let query = {}
+    if(gender  && gender != 'gender')
+    {
+      query['gender'] = gender
+    }
+    if(category)
+    {
+      query['category'] = category
+    }
+    const data = await ProductsModel.find(query)
+    return res.status(200).send({ status : true , data : data})
+  }catch(err){
+    errorHandler(err,res)
+  }
+}
 module.exports = {
   createProducts,
   getProductsData,
   updateProductData,
   deleteProductData,
   getProductsDataById,
+  ProductData
 };
