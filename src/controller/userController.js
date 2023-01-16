@@ -8,38 +8,15 @@ const validation = require("../validation/validation");
 //<----------------------< Create : UserFunction >--------------------->//
 const createUser = async (req, res) => {
   try {
-    let uploadedFileURL;
-    let files = req.files;
-    if (files && files.length > 0) {
-      uploadedFileURL = await aws.uploadFile(files[0]);
-    } else {
-      return res.status(400).send({ msg: "No Profile image is found" });
+    const data = req.body;
+    const {title,name,phone,email,password,street,city,pincode} = data;
+    let address={
+      "street":street,
+      "city":city,
+      "pincode":pincode
     }
-    let data = req.body;
-    let address = req.body.address;
-    address = JSON.parse(address);
-    data["address"] = address;
-    if(data["address"])
-    {
-      console.log("hello")
-      let { shipping ,billing  } = data["address"] 
-      console.log(shipping.city,shipping.street,shipping.pincode, billing.city ,billing.street,billing.pincode)
-      if((shipping.city==undefined  || shipping.street==undefined || shipping.pincode==undefined || billing.city==undefined || billing.street==undefined || billing.pincode==undefined))
-      {
-         return res.status(400).send({ status : false , msg : "city,street and pincode is mandatory for shipping and billing address"})
-      }
-    }
-    data.password = data.password.trim();
-    if (!validation.isValidPassword(data.password)) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          msg: "Password should contain Minimum eight and maximum 15 characters, at least one uppercase letter, one lowercase letter, one number and one special character",
-        });
-    }
+    data.address=address;
     data.password = await bcrypt.hash(data.password, 10);
-    data.profileImage = uploadedFileURL;
     const datacreate = await userModel.create(data);
     res.status(201).send({ status: true, data: datacreate });
   } catch(err) {

@@ -36,9 +36,9 @@ router.put("/products/:productId", updateProductData);
 router.delete("/products/:productId", deleteProductData);
 router.get('/products/:gender',ProductData)
 
-router.post("/users/:userId/cart", authentication,authorization,checkuserId, createCart);
-router.put("/users/:userId/cart", authentication,authorization,checkuserId,updateCart);
-router.get("/users/:userId/cart", authentication,authorization,checkuserId, getCartData);
+router.post("/users/:userId/cart",  createCart);
+router.put("/users/:userId/cart", updateCart);
+router.get("/users/:userId/cart",  getCartData);
 router.delete("/users/:userId/cart", authentication,authorization,checkuserId, deleteCartData);
 
 router.post("/users/:userId/orders", authentication,authorization,checkuserId, createOder);

@@ -4,18 +4,18 @@ const validation = require('../validation/validation')
 //<----------------------< Create : UserSchema >----------------------->//
 const UserSchema = new mongoose.Schema(
   {
-    fname: { 
+    name: { 
         type: String,
         trim : true, 
-        required: [true, "Please provide the first name"],
-        validate: [ validation.isValidName , "please provide a valid last name"]
+        // required: [true, "Please provide the first name"],
+        // validate: [ validation.isValidName , "please provide a valid last name"]
     },
-    lname: { 
-        type: String, 
-        required: [true, "Please provide the last name"],
-        trim : true,
-        validate: [ validation.isValidName , "please provide a valid last name"]
-    },
+    // lname: { 
+    //     type: String, 
+    //     required: [true, "Please provide the last name"],
+    //     trim : true,
+    //     validate: [ validation.isValidName , "please provide a valid last name"]
+    // },
 
     email:  {
         type: String,
@@ -25,10 +25,10 @@ const UserSchema = new mongoose.Schema(
         validate: [ validation.isValidEmailId , "please provide a valid email id"]
       },
 
-    profileImage: {
-         type: String,
-         required: [true, "Please provide your profileImage "], 
-         trim: true },
+    // profileImage: {
+    //      type: String,
+    //      required: [true, "Please provide your profileImage "], 
+    //      trim: true },
 
     phone: {
         type: String,
