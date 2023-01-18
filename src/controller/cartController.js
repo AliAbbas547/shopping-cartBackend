@@ -190,7 +190,7 @@ const getCartData = async function (req, res) {
 
     let cartData = await cartModel
       .findOne({ userId: userId })
-      .populate("items.productId", { title: 1, price: 1, productImage: 1 });
+      .populate("items.productId", { title: 1, price: 1, productImage: 1 ,description : 1 });
     if (cartData == null) {
       return res
         .status(404)
