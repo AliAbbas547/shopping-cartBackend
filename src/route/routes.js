@@ -22,7 +22,7 @@ const {
   getCartData,
   deleteCartData,
 } = require("../controller/cartController");
-const { createOder, updateOrder } = require("../controller/oderController");
+const { createOder, updateOrder,getoder } = require("../controller/oderController");
 
 router.post("/register", createUser);
 router.post("/login", logInUserData);
@@ -41,7 +41,8 @@ router.put("/users/:userId/cart", updateCart);
 router.get("/users/:userId/cart",  getCartData);
 router.delete("/users/:userId/cart", authentication,authorization,checkuserId, deleteCartData);
 
-router.post("/users/:userId/orders", authentication,authorization,checkuserId, createOder);
+router.post("/users/:userId/orders",  createOder);
 router.put("/users/:userId/orders", authentication,authorization,checkuserId,updateOrder);
+router.get('/users/:oderId/orders',getoder)
 //<----------------------< Exports : router >-------------------------->//
 module.exports = router;

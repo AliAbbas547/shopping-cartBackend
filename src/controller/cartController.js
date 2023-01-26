@@ -4,7 +4,6 @@ const ProductsModel = require("../models/productModel");
 
 var { ObjectId } = require("mongodb");
 
-
 const createCart = async function (req, res) {
   try {
     let userId = req.params.userId;

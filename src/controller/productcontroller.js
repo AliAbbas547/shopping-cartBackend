@@ -165,7 +165,7 @@ const ProductData = async function(req,res){
     {
       query['category'] = category
     }
-    const data = await ProductsModel.find(query)
+    const data = await ProductsModel.find(query).sort({ createdAt: -1 })
     return res.status(200).send({ status : true , data : data})
   }catch(err){
     errorHandler(err,res)
