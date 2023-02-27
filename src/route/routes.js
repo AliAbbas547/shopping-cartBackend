@@ -43,6 +43,6 @@ router.delete("/users/:userId/cart", authentication,authorization,checkuserId, d
 
 router.post("/users/:userId/orders",  createOder);
 router.put("/users/:userId/orders", authentication,authorization,checkuserId,updateOrder);
-router.get('/users/:oderId/orders',getoder)
+// router.get('/users/:oderId/orders',getoder)
 //<----------------------< Exports : router >-------------------------->//
 module.exports = router;
